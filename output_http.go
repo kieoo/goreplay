@@ -85,7 +85,22 @@ type HTTPOutput struct {
 func NewHTTPOutput(address string, config *HTTPOutputConfig) PluginReadWriter {
 	o := new(HTTPOutput)
 	var err error
-	newConfig := config.Copy()
+	//newConfig := config.Copy()
+	newConfig := new(HTTPOutputConfig)
+	newConfig.TrackResponses = config.TrackResponses
+	newConfig.Stats = config.Stats
+	newConfig.OriginalHost = config.OriginalHost
+	newConfig.RedirectLimit = config.RedirectLimit
+	newConfig.WorkersMin = config.WorkersMin
+	newConfig.WorkersMax = config.WorkersMax
+	newConfig.StatsMs = config.StatsMs
+	newConfig.QueueLen = config.QueueLen
+	newConfig.ElasticSearch = config.ElasticSearch
+	newConfig.Timeout = config.Timeout
+	newConfig.WorkerTimeout = config.WorkerTimeout
+	newConfig.BufferSize = config.BufferSize
+	newConfig.SkipVerify = config.SkipVerify
+
 	newConfig.url, err = url.Parse(address)
 	if err != nil {
 		log.Fatal(fmt.Sprintf("[OUTPUT-HTTP] parse HTTP output URL error[%q]", err))
