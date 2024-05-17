@@ -30,6 +30,9 @@ release: clean release-linux-amd64 release-linux-arm64 release-mac-amd64 release
 vendor:
 	go mod vendor
 
+release-bin-x64: vendor
+	docker run --rm -v `pwd`:$(SOURCE_PATH) -t --env GOOS=linux --env GOARCH=386 -i $(CONTAINER) go build -mod=vendor -o $(BIN_NAME) -tags netgo $(LDFLAGS)
+
 release-bin-linux-amd64: vendor
 	docker run --platform linux/amd64 --rm -v `pwd`:$(SOURCE_PATH) -t --env GOOS=linux --env GOARCH=amd64 -i $(CONTAINER_AMD) go build -mod=vendor -o $(BIN_NAME) -tags netgo $(LDFLAGS) ./cmd/gor/
 
@@ -73,6 +76,10 @@ release-mac-arm64: dist release-bin-mac-arm64
 release-windows: dist release-bin-windows
 	zip $(DIST_PATH)/gor-$(VERSION)_windows.zip "$(BIN_NAME).exe"
 	rm -rf "$(BIN_NAME).exe"
+
+release-x86: release-bin-x64
+	tar -czf gor_$(VERSION)$(PREFIX)_x86.tar.gz $(BIN_NAME)
+	rm $(BIN_NAME)
 
 clean:
 	rm -rf $(DIST_PATH)
